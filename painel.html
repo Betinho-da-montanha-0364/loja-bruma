@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Painel de pedidos</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%233a1d2b'/%3E%3Ctext x='32' y='44' font-family='Georgia' font-size='34' text-anchor='middle' fill='%23fdf6f4'%3EP%3C/text%3E%3C/svg%3E">
+<style>
+:root{--bg:#fdf6f4;--surface:#fff;--ink:#3a1d2b;--muted:#7a5d67;--line:#e6cdd3;--accent:#b8325e;--soft:#f8e8ea;--ok:#2f7a4b;--warn:#a5620c;--bad:#b42318;
+  --sans:"Jost",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#1d1418;--surface:#2a1e23;--ink:#f6e9ed;--muted:#c9aeb7;--line:#4a343d;--accent:#f07aa0;--soft:#3a2830;--ok:#7fd19b;--warn:#f0b35a;--bad:#ff8a80;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--sans)}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+header{background:var(--ink);color:var(--bg);padding:14px 0;position:sticky;top:0;z-index:5}
+header .wrap{display:flex;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap}
+header .ht{font-size:18px;margin:0;font-weight:600}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:9px 16px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--ink);min-height:40px}
+.btn:hover{border-color:var(--ink)}
+.btn.dark{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+header .btn{background:transparent;color:var(--bg);border-color:rgba(255,255,255,.35)}
+.login{max-width:380px;margin:12vh auto;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:28px;display:grid;gap:12px}
+.login h2{margin:0;font-size:24px}
+label{display:grid;gap:4px;font-size:13px;color:var(--muted)}
+input,select,textarea{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 11px;font-size:16px;min-height:42px;width:100%}
+textarea{min-height:60px;resize:vertical}
+.err{color:var(--bad);margin:0;font-size:14px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:18px 0}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.kpi span{color:var(--muted);font-size:13px;display:block}.kpi b{font-size:22px;font-variant-numeric:tabular-nums}
+.tabs{display:flex;gap:8px;margin:6px 0 12px}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.filtros{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:10px}
+.filtros button{white-space:nowrap}
+.filtros button[aria-pressed="true"]{background:var(--soft);border-color:var(--accent)}
+.busca{margin-bottom:12px}
+.ped{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px;display:grid;gap:12px}
+.ped.pago{border-left:5px solid var(--accent)}
+.top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.top .pc{font-size:17px;margin:0;display:inline}.muted{color:var(--muted);font-size:13.5px}
+.tag{border-radius:999px;padding:3px 12px;font-size:13px;font-weight:500;background:var(--soft)}
+.tag.pago{background:var(--accent);color:#fff}.tag.enviado,.tag.entregue{background:var(--ok);color:#fff}.tag.recusado,.tag.estornado,.tag.cancelado{background:var(--bad);color:#fff}.tag.comprado{background:var(--warn);color:#fff}
+@media (prefers-color-scheme:dark){.tag.pago,.tag.enviado,.tag.entregue,.tag.recusado,.tag.estornado,.tag.cancelado,.tag.comprado{color:#1d1418}}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:700px){.cols{grid-template-columns:1fr}}
+.box{border:1px solid var(--line);border-radius:14px;padding:12px;display:grid;gap:6px;align-content:start}
+.box h3{margin:0;font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:500}
+.end{white-space:pre-line}
+.item{display:grid;grid-template-columns:48px 1fr auto;gap:10px;align-items:center}
+.item img{width:48px;height:64px;object-fit:cover;border-radius:8px;background:var(--soft)}
+.item a{color:var(--accent);font-size:13.5px}
+.fin{display:flex;gap:14px;flex-wrap:wrap;font-size:14px}.fin b{font-variant-numeric:tabular-nums}
+.lucro{color:var(--ok)}
+.edit{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media (max-width:700px){.edit{grid-template-columns:1fr}}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+.vazio{text-align:center;color:var(--muted);padding:40px 0}
+.prods{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.prod{display:grid;grid-template-columns:48px 1fr auto;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px}
+.prod img{width:48px;height:64px;object-fit:cover;border-radius:8px}
+.prod.off{opacity:.55}
+.sw{appearance:none;width:46px;height:26px;border-radius:999px;background:var(--line);position:relative;cursor:pointer;min-height:0;padding:0;border:0}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .15s}
+.sw:checked{background:var(--ok)}.sw:checked::after{left:23px}
+.ligs{list-style:none;margin:0;padding:0;display:grid;gap:6px}.ligs li{display:flex;gap:8px}
+.alerta{color:var(--warn);font-size:13px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;z-index:20}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header><div class="wrap"><h1 class="ht">Painel de pedidos</h1><div style="display:flex;gap:8px"><button class="btn" id="atualizar" hidden>Atualizar</button><button class="btn" id="sair" hidden>Sair</button></div></div></header>
+
+<main class="wrap">
+  <form class="login" id="login">
+    <h2>Entrar</h2>
+    <label for="senha">Senha do painel<input id="senha" type="password" autocomplete="current-password" required></label>
+    <button class="btn dark" type="submit">Entrar</button>
+    <p class="err" id="loginErr" role="alert" hidden></p>
+    <p class="muted" style="margin:0">A senha é a variável PAINEL_SENHA que você criou no Netlify.</p>
+  </form>
+
+  <div id="app" hidden>
+    <div class="kpis" id="kpis"></div>
+    <div class="tabs" role="tablist">
+      <button class="btn" role="tab" aria-selected="true" data-aba="pedidos">Pedidos</button>
+      <button class="btn" role="tab" aria-selected="false" data-aba="estoque">Esgotados</button>
+      <button class="btn" role="tab" aria-selected="false" data-aba="auto">Automação</button>
+    </div>
+    <section id="abaPedidos">
+      <div class="filtros" id="filtros"></div>
+      <div class="acts" style="margin-bottom:10px"><input class="busca" id="busca" type="search" placeholder="Buscar por nome, pedido, cidade…" aria-label="Buscar pedidos" style="flex:1;margin:0;min-width:200px">
+        <input type="month" id="mesPl" aria-label="Mês da planilha" style="width:auto"><button class="btn" id="baixarPl">Baixar planilha</button></div>
+      <div id="lista"></div>
+    </section>
+    <section id="abaAuto" hidden>
+      <div class="box" style="background:var(--surface)"><h3>O que está ligado</h3><ul class="ligs" id="ligs"></ul>
+        <div class="acts"><button class="btn dark" id="ligarTg">Conectar bot do Telegram</button></div>
+        <p class="muted" style="margin:0">Crie as variáveis no Netlify (veja o LEIA-ME), faça um novo deploy e depois clique em Conectar. O bot passa a responder no seu Telegram.</p></div>
+      <div class="box" style="background:var(--surface);margin-top:12px"><h3>Google Ads</h3>
+        <p class="muted" style="margin:0">Chave do robô de anúncios (cole no arquivo robo-google-ads.js, como explica o LEIA-ME):</p>
+        <div class="acts"><input id="adsChave" readonly style="flex:1;min-width:220px;font-family:monospace" aria-label="Chave do robô de anúncios"><button class="btn" id="copiaChave">Copiar chave</button></div>
+        <div id="adsInfo" class="muted"></div>
+        <div id="adsPaus"></div></div>
+    </section>
+    <section id="abaEstoque" hidden>
+      <p class="muted">Desligue a chave da peça que acabou na Feira. Ela some da loja em até 1 minuto e ninguém consegue pagar por ela.</p>
+      <input class="busca" id="buscaP" type="search" placeholder="Buscar peça…" aria-label="Buscar peças">
+      <div class="prods" id="prods"></div>
+    </section>
+  </div>
+</main>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const brl=v=>"R$ "+Number(v||0).toFixed(2).replace(".",",");
+const esc=t=>String(t??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const dt=t=>t?new Date(t).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}):"";
+const ss={get(k){try{return sessionStorage.getItem(k)}catch(e){return null}},set(k,v){try{v==null?sessionStorage.removeItem(k):sessionStorage.setItem(k,v)}catch(e){}}};
+let senha=ss.get("painel"),D=null,filtro="pago",busca="",timer;
+let tt;function toast(m){const t=$("#toast");t.textContent=m;t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,2400)}
+
+async function api(metodo,corpo){
+  const r=await fetch("/api/painel",{method:metodo,headers:{"Content-Type":"application/json",Authorization:"Bearer "+senha},body:corpo?JSON.stringify(corpo):undefined});
+  const j=await r.json().catch(()=>({}));
+  if(r.status===401){sair();throw new Error(j.erro||"Senha incorreta.")}
+  if(!r.ok)throw new Error(j.erro||"Erro no servidor.");
+  return j;
+}
+async function carregar(){
+  try{D=await api("GET");$("#login").hidden=true;$("#app").hidden=false;$("#sair").hidden=false;$("#atualizar").hidden=false;render();}
+  catch(e){$("#loginErr").textContent=e.message;$("#loginErr").hidden=false;$("#login").hidden=false;$("#app").hidden=true}
+}
+function sair(){senha=null;ss.set("painel",null);clearInterval(timer);$("#app").hidden=true;$("#login").hidden=false;$("#sair").hidden=true;$("#atualizar").hidden=true}
+$("#login").addEventListener("submit",e=>{e.preventDefault();senha=$("#senha").value;ss.set("painel",senha);$("#loginErr").hidden=true;carregar().then(()=>{clearInterval(timer);timer=setInterval(()=>{if(!document.querySelector(".ped :focus"))carregar()},60000)})});
+$("#sair").onclick=sair;$("#atualizar").onclick=()=>carregar().then(()=>toast("Atualizado"));
+
+const prod=id=>D.produtos.find(p=>p.id===id)||{};
+const custo=p=>p.itens.reduce((s,i)=>s+(i.custo||0)*i.q,0);
+const recebido=p=>p.pagamento?.liquido??p.total;
+const ATIVOS=["pago","comprado","enviado","entregue"];
+
+function render(){
+  const ps=D.pedidos,mes=new Date().toISOString().slice(0,7);
+  const doMes=ps.filter(p=>ATIVOS.includes(p.status)&&(p.pagamento?.data||p.criado||"").slice(0,7)===mes);
+  const fat=doMes.reduce((s,p)=>s+p.total,0),luc=doMes.reduce((s,p)=>s+recebido(p)-custo(p),0);
+  $("#kpis").innerHTML=[["Para comprar na Feira",ps.filter(p=>p.status==="pago").length],["Comprados, falta enviar",ps.filter(p=>p.status==="comprado").length],["Vendas no mês",brl(fat)],["Lucro estimado no mês",brl(luc)]]
+    .map(([a,b])=>`<div class="kpi"><span>${a}</span><b>${b}</b></div>`).join("");
+  const conta=s=>s==="todos"?ps.length:ps.filter(p=>p.status===s).length;
+  $("#filtros").innerHTML=[["pago","A comprar"],["comprado","A enviar"],["enviado","Enviados"],["aguardando","Aguardando pagamento"],["todos","Todos"]]
+    .map(([s,n])=>`<button class="btn" aria-pressed="${filtro===s}" data-f="${s}">${n} (${conta(s)})</button>`).join("");
+  const q=busca.toLowerCase();
+  const l=ps.filter(p=>(filtro==="todos"||p.status===filtro)&&(!q||JSON.stringify([p.codigo,p.cliente,p.itens.map(i=>i.nome)]).toLowerCase().includes(q)));
+  $("#lista").innerHTML=l.length?l.map(card).join(""):`<p class="vazio">Nenhum pedido aqui.</p>`;
+  renderProds();renderLigs();
+}
+function renderAds(){const A=D.ads||{};$("#adsChave").value=A.chave||"crie a variável PAINEL_SENHA";
+  const h=A.hoje,u=A.ultimoDia;$("#adsInfo").textContent=h?`Último contato do robô: ${dt(h.recebido)} · hoje gastou ${brl(h.custo)} em ${h.cliques||0} cliques`+(u?` · ontem ${brl(u.custo)} e ${Number(u.conversoes||0).toFixed(0)} vendas`:""):"O robô ainda não mandou números. Depois de instalar no Google Ads, aparece aqui em até 1 hora.";
+  $("#adsPaus").innerHTML=(A.pausados||[]).length?`<p style="margin:8px 0 4px">Fora dos anúncios (só gastavam):</p>`+A.pausados.map(id=>`<div class="acts" style="align-items:center"><span>${esc(prod(id).nome||id)}</span><button class="btn" data-adson="${esc(id)}">Voltar aos anúncios</button></div>`).join(""):""}
+$("#copiaChave").onclick=async()=>{try{await navigator.clipboard.writeText($("#adsChave").value);toast("Chave copiada")}catch(e){$("#adsChave").select();toast("Selecionei, copie com Ctrl+C")}};
+$("#adsPaus").addEventListener("click",async e=>{const b=e.target.closest("[data-adson]");if(!b)return;try{const j=await api("POST",{acao:"ads",id:b.dataset.adson,anunciar:true});D.ads.pausados=j.pausados;renderAds();toast("Volta aos anúncios em até 1 dia")}catch(err){toast(err.message)}});
+function renderLigs(){const L=D.ligados||{};renderAds();
+  $("#ligs").innerHTML=[[L.telegram&&L.telegramChat,"Bot do Telegram (avisos, resumo, comandos)",L.telegram&&!L.telegramChat?"falta TELEGRAM_CHAT_ID: mande /start para o bot depois de conectar":"TELEGRAM_BOT_TOKEN e TELEGRAM_CHAT_ID"],
+    [L.email,"E-mails automáticos para a cliente","RESEND_API_KEY e EMAIL_REMETENTE"],[L.webhookSeguro,"Assinatura do Mercado Pago (segurança extra)","MP_WEBHOOK_SECRET (opcional)"],[true,"Conferência diária da Feira e esgotado automático",""],[!!(D.ads?.hoje&&Date.now()-Date.parse(D.ads.hoje.recebido)<3*3600e3),"Robô do Google Ads","instale o robo-google-ads.js na sua conta do Google Ads"]]
+    .map(([ok,n,f])=>`<li><span aria-hidden="true">${ok?"✅":"⭕"}</span><span>${n}${ok?"":` <span class="muted">· ${esc(f)}</span>`}</span></li>`).join("")}
+$("#ligarTg").onclick=async()=>{try{const j=await api("POST",{acao:"ligar-telegram"});toast(j.chatId?"Bot conectado! Veja o Telegram":"Conectado. Agora mande /start para o bot")}catch(e){toast(e.message)}};
+function endereco(c){return `${c.nome}\n${c.rua}, ${c.numero}${c.complemento?" - "+c.complemento:""}\n${c.cidade}/${c.uf} - CEP ${c.cep}\nTel: ${c.whatsapp}`}
+function msgCliente(p){
+  const n=(p.cliente.nome||"").split(" ")[0];
+  if(p.status==="enviado"&&p.rastreio)return `Oi, ${n}! Seu pedido ${p.codigo} foi enviado 💕\nCódigo de rastreio: ${p.rastreio}\nAcompanhe em: https://rastreamento.correios.com.br/app/index.php`;
+  if(p.status==="aguardando")return `Oi, ${n}! Vi que você começou um pedido na loja e o pagamento ainda não foi concluído. Posso te ajudar com alguma coisa?`;
+  return `Oi, ${n}! Recebemos o pagamento do seu pedido ${p.codigo} e ele já está sendo separado. Assim que for postado, te mando o código de rastreio. Obrigada! 💕`;
+}
+function card(p){
+  const c=p.cliente||{},fone=String(c.whatsapp||"").replace(/\D/g,""),wa=fone?`https://wa.me/${fone.length<=11?"55"+fone:fone}?text=${encodeURIComponent(msgCliente(p))}`:"";
+  const opts=Object.entries(D.status).map(([k,v])=>`<option value="${k}"${k===p.status?" selected":""}>${v}</option>`).join("");
+  return `<article class="ped ${esc(p.status)}" data-cod="${esc(p.codigo)}">
+    <div class="top"><div><h2 class="pc">${esc(p.codigo)}</h2> <span class="muted">· ${dt(p.criado)} · ${p.metodo==="pix"?"Pix":"Cartão"}${p.pagamento?.parcelas>1?` ${p.pagamento.parcelas}x`:""}</span></div>${p.origem?.fonte?`<span class="tag" style="margin-right:6px">${p.origem.fonte==="google-ads"?"Veio do Google Ads":"Veio de "+esc(p.origem.fonte)}</span>`:""}<span class="tag ${esc(p.status)}">${esc(D.status[p.status]||p.status)}</span></div>
+    <div class="cols">
+      <div class="box"><h3>Peças</h3>${p.itens.map(i=>{const pr=prod(i.id);return `<div class="item"><img src="${esc(pr.img||"")}" alt="" loading="lazy"><div>${i.q}x ${esc(i.nome)}<div class="muted">${esc(i.cor)} · ${esc(i.tam)} · custo ${brl(i.custo*i.q)}</div></div>${i.linkFeira?`<a href="${esc(i.linkFeira)}" target="_blank" rel="noopener">Abrir na Feira</a>`:""}</div>`}).join("")}
+        <div class="fin"><span>Venda <b>${brl(p.total)}</b></span><span>Recebido <b>${brl(recebido(p))}</b></span><span>Custo <b>${brl(custo(p))}</b></span><span class="lucro">Lucro <b>${brl(recebido(p)-custo(p))}</b></span></div></div>
+      <div class="box"><h3>Entregar para</h3><div class="end">${esc(endereco(c))}</div><div class="muted">${esc(c.email)}</div>
+        <div class="acts"><button class="btn" data-copiar>Copiar endereço</button>${wa?`<a class="btn" href="${wa}" target="_blank" rel="noopener">Mensagem no WhatsApp</a>`:""}</div></div>
+    </div>
+    <div class="edit">
+      <label>Status<select data-k="status">${opts}</select></label>
+      <label>Nº do pedido na Feira<input data-k="pedidoFeira" value="${esc(p.pedidoFeira||"")}"></label>
+      <label>Código de rastreio<input data-k="rastreio" value="${esc(p.rastreio||"")}" autocapitalize="characters"></label>
+    </div>
+    <label>Anotações<textarea data-k="nota">${esc(p.nota||"")}</textarea></label>
+    <div class="acts"><button class="btn dark" data-salvar>Salvar</button>${p.pagamento?`<span class="muted" style="align-self:center">Mercado Pago nº ${esc(p.pagamento.id)}</span>`:""}</div>
+  </article>`;
+}
+$("#filtros").addEventListener("click",e=>{const b=e.target.closest("[data-f]");if(b){filtro=b.dataset.f;render()}});
+$("#busca").addEventListener("input",e=>{busca=e.target.value;render()});
+$("#mesPl").value=new Date().toLocaleDateString("sv-SE",{timeZone:"America/Sao_Paulo"}).slice(0,7);
+$("#baixarPl").onclick=()=>{
+  const mes=$("#mesPl").value,dia=p=>new Date(p.pagamento?.data||p.criado).toLocaleDateString("sv-SE",{timeZone:"America/Sao_Paulo"});
+  const ps=D.pedidos.filter(p=>p.status!=="aguardando"&&dia(p).startsWith(mes)).sort((a,b)=>dia(a).localeCompare(dia(b)));
+  const n2=v=>Number(v||0).toFixed(2).replace(".",","),cel=v=>{const s=String(v??"");return /[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s};
+  const L=[["Data","Pedido","Status","Cliente","Cidade/UF","Peças","Pagamento","Venda (R$)","Recebido (R$)","Custo Feira (R$)","Lucro (R$)","Nº pedido Feira","Rastreio"],
+    ...ps.map(p=>[new Date(p.pagamento?.data||p.criado).toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo"}),p.codigo,D.status[p.status]||p.status,p.cliente?.nome,`${p.cliente?.cidade}/${p.cliente?.uf}`,p.itens.map(i=>`${i.q}x ${i.nome} (${i.cor}, ${i.tam})`).join(" | "),p.metodo==="pix"?"Pix":"Cartão",n2(p.total),n2(recebido(p)),n2(custo(p)),n2(ATIVOS.includes(p.status)?recebido(p)-custo(p):0),p.pedidoFeira||"",p.rastreio||""])];
+  const blob=new Blob(["\ufeff"+L.map(l=>l.map(cel).join(";")).join("\r\n")],{type:"text/csv"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`vendas-${mes}.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);toast(`${ps.length} pedidos na planilha`)};
+$("#lista").addEventListener("click",async e=>{
+  const art=e.target.closest(".ped");if(!art)return;const p=D.pedidos.find(x=>x.codigo===art.dataset.cod);
+  if(e.target.closest("[data-copiar]")){try{await navigator.clipboard.writeText(endereco(p.cliente));toast("Endereço copiado")}catch(err){toast("Não deu para copiar")}}
+  if(e.target.closest("[data-salvar]")){
+    const v=k=>art.querySelector(`[data-k="${k}"]`).value;
+    let st=v("status");if(v("rastreio")&&["pago","comprado"].includes(st)&&!p.rastreio)st="enviado";
+    try{const j=await api("POST",{acao:"atualizar",codigo:p.codigo,status:st,rastreio:v("rastreio"),pedidoFeira:v("pedidoFeira"),nota:v("nota")});
+      Object.assign(p,j.pedido);render();toast(st==="enviado"?"Salvo. Mande o rastreio para a cliente pelo WhatsApp":"Salvo")}catch(err){toast(err.message)}
+  }
+});
+/* esgotados */
+let buscaP="";
+function renderProds(){
+  const q=buscaP.toLowerCase(),esg=new Set(D.esgotados);
+  $("#prods").innerHTML=D.produtos.filter(p=>!q||p.nome.toLowerCase().includes(q)).map(p=>`<div class="prod${esg.has(p.id)?" off":""}"><img src="${esc(p.img)}" alt="" loading="lazy"><div>${esc(p.nome)}<div class="muted">${brl(p.preco)} · custo ${brl(p.custo)}</div>${D.vigia?.[p.id]&&D.vigia[p.id].status!=="ok"&&D.vigia[p.id].texto?`<div class="alerta">Feira: ${esc(D.vigia[p.id].texto)}</div>`:""}</div>
+    <input type="checkbox" class="sw" data-id="${esc(p.id)}" ${esg.has(p.id)?"":"checked"} aria-label="${esc(p.nome)} à venda"></div>`).join("");
+}
+$("#buscaP").addEventListener("input",e=>{buscaP=e.target.value;renderProds()});
+$("#prods").addEventListener("change",async e=>{
+  const c=e.target.closest(".sw");if(!c)return;const esg=new Set(D.esgotados);c.checked?esg.delete(c.dataset.id):esg.add(c.dataset.id);
+  try{const j=await api("POST",{acao:"esgotados",ids:[...esg]});D.esgotados=j.esgotados;renderProds();toast(c.checked?"Peça voltou para a loja":"Peça marcada como esgotada")}catch(err){toast(err.message);c.checked=!c.checked}
+});
+document.querySelector(".tabs").addEventListener("click",e=>{const b=e.target.closest("[data-aba]");if(!b)return;
+  document.querySelectorAll("[data-aba]").forEach(x=>x.setAttribute("aria-selected",x===b));$("#abaPedidos").hidden=b.dataset.aba!=="pedidos";$("#abaEstoque").hidden=b.dataset.aba!=="estoque";$("#abaAuto").hidden=b.dataset.aba!=="auto"});
+if(senha)carregar().then(()=>{timer=setInterval(()=>{if(!document.querySelector(".ped :focus"))carregar()},60000)});
+</script>
+</body>
+</html>
