@@ -3,7 +3,7 @@ window.CONFIG_LOJA = {
   nome: "Bruma",
   tawk: "",                          // chat do site (Tawk.to): "IDdaPropriedade/IDdoWidget", tirado do código do widget. Vazio = o botão abre o Direct do Instagram
   instagram: "brumamodafeminina414",  // usuário do Instagram da loja
-  checkout: "mercadopago",            // pagamento pelo Mercado Pago (precisa da hospedagem Netlify)
+  checkout: "mercadopago",            // pagamento online (PagBank ou Mercado Pago, definido no Netlify). Precisa da hospedagem Netlify
   urlPagamento: "/api/criar-pagamento",
   urlEstoque: "/api/estoque",
   urlConsulta: "/api/consultar-pedido",
