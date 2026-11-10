@@ -6,4 +6,4 @@ Disallow: /painel.html
 Disallow: /api/
 Allow: /google-produtos.xml
 
-Sitemap: https://betinho-da-montanha-0364.github.io/loja-bruma/sitemap.xml
+Sitemap: https://loja-bruma.netlify.app/sitemap.xml
