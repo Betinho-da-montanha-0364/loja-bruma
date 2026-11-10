@@ -212,7 +212,7 @@ $("#lista").addEventListener("click",async e=>{
     const v=k=>art.querySelector(`[data-k="${k}"]`).value;
     let st=v("status");if(v("rastreio")&&["pago","comprado"].includes(st)&&!p.rastreio)st="enviado";
     try{const j=await api("POST",{acao:"atualizar",codigo:p.codigo,status:st,rastreio:v("rastreio"),pedidoFeira:v("pedidoFeira"),nota:v("nota")});
-      Object.assign(p,j.pedido);render();toast(st==="enviado"?"Salvo. Mande o rastreio para a cliente pelo WhatsApp":"Salvo")}catch(err){toast(err.message)}
+      Object.assign(p,j.pedido);render();toast(st==="enviado"?"Salvo. A cliente recebe o rastreio por e-mail":"Salvo")}catch(err){toast(err.message)}
   }
 });
 /* esgotados */
