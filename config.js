@@ -20,6 +20,6 @@ window.CONFIG_LOJA = {
   parcelaMinima: 5,                   // valor mínimo de cada parcela (R$)
   limiteMEI: 81000,                   // teto anual do MEI (R$). O bot avisa quando o faturamento chegar perto
   cnpj: "00.000.000/0001-00",
-  razaoSocial: "Seu nome ou nome do MEI",
+  razaoSocial: "Bruma Moda Feminina",
   endereco: "Cidade - UF"
 };
