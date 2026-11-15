@@ -17,6 +17,7 @@ window.CONFIG_LOJA = {
   adsCustoMaxVenda: 35,               // te avisa se cada venda pelo anúncio custar mais que isso (R$)
   freteFixo: 11.99,                   // frete cobrado em todo pedido
   freteGratisAcima: null,             // ex.: 199 para dar frete grátis acima desse valor; null = sempre cobra
+  natalAte: "10/12",                  // último dia para pedir e chegar antes do Natal (aparece na faixa do topo)
   descontoPix: 5,                     // % de desconto no Pix (0 para desligar)
   parcelas: 10,                       // máximo de parcelas sem juros no cartão
   parcelaMinima: 5,                   // valor mínimo de cada parcela (R$)
