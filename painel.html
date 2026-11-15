@@ -79,7 +79,7 @@ textarea{min-height:60px;resize:vertical}
     <label for="senha">Senha do painel<input id="senha" type="password" autocomplete="current-password" required></label>
     <button class="btn dark" type="submit">Entrar</button>
     <p class="err" id="loginErr" role="alert" hidden></p>
-    <p class="muted" style="margin:0">A senha é a variável PAINEL_SENHA que você criou no Netlify.</p>
+    <p class="muted" style="margin:0">A senha é a variável PAINEL_SENHA que você criou no Cloudflare.</p>
   </form>
 
   <div id="app" hidden>
@@ -98,7 +98,7 @@ textarea{min-height:60px;resize:vertical}
     <section id="abaAuto" hidden>
       <div class="box" style="background:var(--surface)"><h3>O que está ligado</h3><ul class="ligs" id="ligs"></ul>
         <div class="acts"><button class="btn dark" id="ligarTg">Conectar bot do Telegram</button></div>
-        <p class="muted" style="margin:0">Crie as variáveis no Netlify (veja o LEIA-ME), faça um novo deploy e depois clique em Conectar. O bot passa a responder no seu Telegram.</p></div>
+        <p class="muted" style="margin:0">Crie as variáveis no Cloudflare (veja o LEIA-ME), faça um novo deploy e depois clique em Conectar. O bot passa a responder no seu Telegram.</p></div>
       <div class="box" style="background:var(--surface);margin-top:12px"><h3>Google Ads</h3>
         <p class="muted" style="margin:0">Chave do robô de anúncios (cole no arquivo robo-google-ads.js, como explica o LEIA-ME):</p>
         <div class="acts"><input id="adsChave" readonly style="flex:1;min-width:220px;font-family:monospace" aria-label="Chave do robô de anúncios"><button class="btn" id="copiaChave">Copiar chave</button></div>
