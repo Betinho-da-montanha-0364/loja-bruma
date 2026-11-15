@@ -67,6 +67,21 @@ textarea{min-height:60px;resize:vertical}
 .ligs{list-style:none;margin:0;padding:0;display:grid;gap:6px}.ligs li{display:flex;gap:8px}
 .alerta{color:var(--warn);font-size:13px}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;z-index:20}
+.res-top{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.st3{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.st{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;border-top:5px solid var(--c)}
+.st span{color:var(--muted);font-size:13px;display:block}.st b{font-size:30px;display:block;font-variant-numeric:tabular-nums;line-height:1.2}.st i{font-style:normal;color:var(--muted);font-size:14px}
+.barra{display:flex;height:22px;border-radius:999px;overflow:hidden;background:var(--soft);margin:14px 0 6px}
+.barra div{height:100%}
+.leg{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted)}.leg span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--c);margin-right:5px}
+.graf{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:12px}
+.graf h3{margin:0 0 8px;font-size:15px}
+.cols{display:flex;align-items:flex-end;gap:3px;height:160px;border-bottom:1px solid var(--line)}
+.col{flex:1;display:flex;flex-direction:column-reverse;min-width:0;height:100%}
+.col div{width:100%}.col div:last-child{border-radius:4px 4px 0 0}
+.dias{display:flex;gap:3px;font-size:10px;color:var(--muted)}.dias span{flex:1;text-align:center;min-width:0;overflow:hidden}
+.top li{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid var(--line)}.top{list-style:none;margin:0;padding:0;display:block}.top li{width:100%}
+.res-top .btn[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 [hidden]{display:none!important}
 </style>
 </head>
@@ -85,11 +100,20 @@ textarea{min-height:60px;resize:vertical}
   <div id="app" hidden>
     <div class="kpis" id="kpis"></div>
     <div class="tabs" role="tablist">
-      <button class="btn" role="tab" aria-selected="true" data-aba="pedidos">Pedidos</button>
+      <button class="btn" role="tab" aria-selected="true" data-aba="resumo">Resumo</button>
+      <button class="btn" role="tab" aria-selected="false" data-aba="pedidos">Pedidos</button>
       <button class="btn" role="tab" aria-selected="false" data-aba="estoque">Esgotados</button>
       <button class="btn" role="tab" aria-selected="false" data-aba="auto">Automação</button>
     </div>
-    <section id="abaPedidos">
+    <section id="abaResumo">
+      <div class="res-top"><span class="muted">Período:</span>
+        <button class="btn" data-per="7" aria-pressed="false">7 dias</button><button class="btn" data-per="30" aria-pressed="true">30 dias</button><button class="btn" data-per="mes" aria-pressed="false">Este mês</button><button class="btn" data-per="tudo" aria-pressed="false">Tudo</button></div>
+      <div class="st3" id="st3"></div>
+      <div class="barra" id="barra" role="img"></div><div class="leg" id="leg"></div>
+      <div class="graf"><h3>Pedidos por dia</h3><div class="cols" id="cols"></div><div class="dias" id="dias"></div></div>
+      <div class="graf"><h3>Peças mais vendidas</h3><ul class="top" id="top"></ul></div>
+    </section>
+    <section id="abaPedidos" hidden>
       <div class="filtros" id="filtros"></div>
       <div class="acts" style="margin-bottom:10px"><input class="busca" id="busca" type="search" placeholder="Buscar por nome, pedido, cidade…" aria-label="Buscar pedidos" style="flex:1;margin:0;min-width:200px">
         <input type="month" id="mesPl" aria-label="Mês da planilha" style="width:auto"><button class="btn" id="baixarPl">Baixar planilha</button></div>
@@ -155,8 +179,39 @@ function render(){
   const q=busca.toLowerCase();
   const l=ps.filter(p=>(filtro==="todos"||p.status===filtro)&&(!q||JSON.stringify([p.codigo,p.cliente,p.itens.map(i=>i.nome)]).toLowerCase().includes(q)));
   $("#lista").innerHTML=l.length?l.map(card).join(""):`<p class="vazio">Nenhum pedido aqui.</p>`;
-  renderProds();renderLigs();
+  renderProds();renderLigs();renderResumo();
 }
+
+let per="30";
+const GRUPO=s=>["pago","comprado","enviado","entregue"].includes(s)?"v":s==="aguardando"?"a":"c";
+const COR={v:"var(--ok)",a:"var(--warn)",c:"var(--bad)"},NOME={v:"Vendido",a:"Aguardando pagamento",c:"Cancelado / recusado"};
+const dataP=p=>(p.criado||p.pagamento?.data||"");
+function renderResumo(){
+  const agora=new Date(),mes=agora.toISOString().slice(0,7);
+  const ini=per==="tudo"?null:per==="mes"?null:new Date(agora-(+per-1)*864e5).toISOString().slice(0,10);
+  const ps=D.pedidos.filter(p=>{const d=dataP(p);return per==="tudo"||(per==="mes"?d.slice(0,7)===mes:d.slice(0,10)>=ini)});
+  const g={v:[],a:[],c:[]};ps.forEach(p=>g[GRUPO(p.status)].push(p));
+  const soma=l=>l.reduce((s,p)=>s+(p.total||0),0);
+  const luc=g.v.reduce((s,p)=>s+recebido(p)-custo(p),0);
+  $("#st3").innerHTML=["v","a","c"].map(k=>`<div class="st" style="--c:${COR[k]}"><span>${NOME[k]}</span><b>${g[k].length}</b><i>${brl(soma(g[k]))}${k==="v"?" · lucro est. "+brl(luc):""}</i></div>`).join("");
+  const tot=ps.length||1;
+  $("#barra").innerHTML=["v","a","c"].map(k=>`<div style="width:${g[k].length/tot*100}%;background:${COR[k]}"></div>`).join("");
+  $("#barra").setAttribute("aria-label",["v","a","c"].map(k=>NOME[k]+": "+g[k].length).join(", "));
+  $("#leg").innerHTML=["v","a","c"].map(k=>`<span style="--c:${COR[k]}">${NOME[k]} ${ps.length?Math.round(g[k].length/ps.length*100):0}%</span>`).join("");
+  // por dia
+  let n=per==="tudo"?30:per==="mes"?agora.getDate():+per; if(per==="tudo"&&ps.length){const p0=ps.map(dataP).filter(Boolean).sort()[0];n=Math.min(90,Math.max(7,Math.ceil((agora-new Date(p0))/864e5)+1));}
+  const dias=[...Array(n)].map((_,i)=>new Date(agora-(n-1-i)*864e5).toISOString().slice(0,10));
+  const cnt=dias.map(d=>{const o={v:0,a:0,c:0};ps.forEach(p=>{if(dataP(p).slice(0,10)===d)o[GRUPO(p.status)]++});return o});
+  const mx=Math.max(1,...cnt.map(o=>o.v+o.a+o.c));
+  $("#cols").innerHTML=cnt.map((o,i)=>`<div class="col" title="${dias[i].slice(8,10)}/${dias[i].slice(5,7)}: ${o.v} vendido, ${o.a} aguardando, ${o.c} cancelado">${["v","a","c"].filter(k=>o[k]).map(k=>`<div style="height:${o[k]/mx*100}%;background:${COR[k]}"></div>`).join("")}</div>`).join("");
+  const passo=Math.ceil(n/10);
+  $("#dias").innerHTML=dias.map((d,i)=>`<span>${i%passo===0||i===n-1?d.slice(8,10)+"/"+d.slice(5,7):""}</span>`).join("");
+  const top={};g.v.forEach(p=>p.itens.forEach(i=>{top[i.nome]=(top[i.nome]||0)+i.q}));
+  const tl=Object.entries(top).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  $("#top").innerHTML=tl.length?tl.map(([n,q])=>`<li><span>${esc(n)}</span><b>${q} un.</b></li>`).join(""):`<li class="muted">Ainda sem vendas nesse período.</li>`;
+  if(!ps.length)$("#cols").innerHTML=`<p class="vazio" style="margin:auto">Nenhum pedido nesse período ainda.</p>`;
+}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-per]");if(!b)return;per=b.dataset.per;document.querySelectorAll("[data-per]").forEach(x=>x.setAttribute("aria-pressed",x===b));renderResumo()});
 function renderAds(){const A=D.ads||{};$("#adsChave").value=A.chave||"crie a variável PAINEL_SENHA";
   const h=A.hoje,u=A.ultimoDia;$("#adsInfo").textContent=h?`Último contato do robô: ${dt(h.recebido)} · hoje gastou ${brl(h.custo)} em ${h.cliques||0} cliques`+(u?` · ontem ${brl(u.custo)} e ${Number(u.conversoes||0).toFixed(0)} vendas`:""):"O robô ainda não mandou números. Depois de instalar no Google Ads, aparece aqui em até 1 hora.";
   $("#adsPaus").innerHTML=(A.pausados||[]).length?`<p style="margin:8px 0 4px">Fora dos anúncios (só gastavam):</p>`+A.pausados.map(id=>`<div class="acts" style="align-items:center"><span>${esc(prod(id).nome||id)}</span><button class="btn" data-adson="${esc(id)}">Voltar aos anúncios</button></div>`).join(""):""}
@@ -228,7 +283,7 @@ $("#prods").addEventListener("change",async e=>{
   try{const j=await api("POST",{acao:"esgotados",ids:[...esg]});D.esgotados=j.esgotados;renderProds();toast(c.checked?"Peça voltou para a loja":"Peça marcada como esgotada")}catch(err){toast(err.message);c.checked=!c.checked}
 });
 document.querySelector(".tabs").addEventListener("click",e=>{const b=e.target.closest("[data-aba]");if(!b)return;
-  document.querySelectorAll("[data-aba]").forEach(x=>x.setAttribute("aria-selected",x===b));$("#abaPedidos").hidden=b.dataset.aba!=="pedidos";$("#abaEstoque").hidden=b.dataset.aba!=="estoque";$("#abaAuto").hidden=b.dataset.aba!=="auto"});
+  document.querySelectorAll("[data-aba]").forEach(x=>x.setAttribute("aria-selected",x===b));$("#abaResumo").hidden=b.dataset.aba!=="resumo";$("#abaPedidos").hidden=b.dataset.aba!=="pedidos";$("#abaEstoque").hidden=b.dataset.aba!=="estoque";$("#abaAuto").hidden=b.dataset.aba!=="auto"});
 if(senha)carregar().then(()=>{timer=setInterval(()=>{if(!document.querySelector(".ped :focus"))carregar()},60000)});
 </script>
 </body>
