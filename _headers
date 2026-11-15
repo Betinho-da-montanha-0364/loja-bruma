@@ -1,5 +1,6 @@
 /img/*
   Cache-Control: public, max-age=2592000
+  Access-Control-Allow-Origin: *
 /painel.html
   X-Robots-Tag: noindex
   Cache-Control: no-store

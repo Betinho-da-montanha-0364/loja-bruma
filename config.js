@@ -22,7 +22,7 @@ window.CONFIG_LOJA = {
   parcelas: 10,                       // máximo de parcelas sem juros no cartão
   parcelaMinima: 5,                   // valor mínimo de cada parcela (R$)
   limiteMEI: 81000,                   // teto anual do MEI (R$). O bot avisa quando o faturamento chegar perto
-  cnpj: "00.000.000/0001-00",
+  cnpj: "54.716.382/0001-83",
   razaoSocial: "Bruma Moda Feminina",
   endereco: "Cidade - UF"
 };
