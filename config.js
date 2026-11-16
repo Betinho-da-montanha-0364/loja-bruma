@@ -19,6 +19,7 @@ window.CONFIG_LOJA = {
   freteGratisAcima: null,             // ex.: 199 para dar frete grátis acima desse valor; null = sempre cobra
   natalAte: "10/12",                  // último dia para pedir e chegar antes do Natal (aparece na faixa do topo)
   descontoPix: 5,                     // % de desconto no Pix (0 para desligar)
+  mpPublicKey: "APP_USR-7ca68a7c-2649-475c-8f92-79985597d1ae", // chave PÚBLICA do Mercado Pago (cartão dentro do site)
   parcelas: 10,                       // máximo de parcelas sem juros no cartão
   parcelaMinima: 5,                   // valor mínimo de cada parcela (R$)
   limiteMEI: 81000,                   // teto anual do MEI (R$). O bot avisa quando o faturamento chegar perto
