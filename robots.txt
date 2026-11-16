@@ -1,8 +1,8 @@
 User-agent: *
 Allow: /
-Disallow: /obrigado.html
-Disallow: /pedido.html
-Disallow: /painel.html
+Disallow: /obrigado
+Disallow: /pedido
+Disallow: /painel
 Disallow: /api/
 Allow: /google-produtos.xml
 
