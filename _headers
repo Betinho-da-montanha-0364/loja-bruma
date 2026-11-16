@@ -4,3 +4,5 @@
 /painel.html
   X-Robots-Tag: noindex
   Cache-Control: no-store
+/config.js
+  Cache-Control: no-cache
