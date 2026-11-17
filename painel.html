@@ -230,7 +230,7 @@ function msgCliente(p){
   return `Oi, ${n}! Recebemos o pagamento do seu pedido ${p.codigo} e ele já está sendo separado. Assim que for postado, te mando o código de rastreio. Obrigada! 💕`;
 }
 function card(p){
-  const c=p.cliente||{},fone=String(c.whatsapp||"").replace(/\D/g,""),wa=fone?`https://wa.me/${fone.length<=11?"55"+fone:fone}?text=${encodeURIComponent(msgCliente(p))}`:"";
+  const c=p.cliente||{},wa=c.email?`mailto:${encodeURIComponent(c.email)}?subject=${encodeURIComponent("Seu pedido "+p.codigo+" na Bruma")}&body=${encodeURIComponent(msgCliente(p))}`:"";
   const opts=Object.entries(D.status).map(([k,v])=>`<option value="${k}"${k===p.status?" selected":""}>${v}</option>`).join("");
   return `<article class="ped ${esc(p.status)}" data-cod="${esc(p.codigo)}">
     <div class="top"><div><h2 class="pc">${esc(p.codigo)}</h2> <span class="muted">· ${dt(p.criado)} · ${p.metodo==="pix"?"Pix":"Cartão"}${p.pagamento?.parcelas>1?` ${p.pagamento.parcelas}x`:""}</span></div>${p.origem?.fonte?`<span class="tag" style="margin-right:6px">${p.origem.fonte==="google-ads"?"Veio do Google Ads":"Veio de "+esc(p.origem.fonte)}</span>`:""}<span class="tag ${esc(p.status)}">${esc(D.status[p.status]||p.status)}</span></div>
@@ -238,7 +238,7 @@ function card(p){
       <div class="box"><h3>Peças</h3>${p.itens.map(i=>{const pr=prod(i.id);return `<div class="item"><img src="${esc(pr.img||"")}" alt="" loading="lazy"><div>${i.q}x ${esc(i.nome)}<div class="muted">${esc(i.cor)} · ${esc(i.tam)} · custo ${brl(i.custo*i.q)}</div></div>${i.linkFeira?`<a href="${esc(i.linkFeira)}" target="_blank" rel="noopener">Abrir na Feira</a>`:""}</div>`}).join("")}
         <div class="fin"><span>Venda <b>${brl(p.total)}</b></span><span>Recebido <b>${brl(recebido(p))}</b></span><span>Custo <b>${brl(custo(p))}</b></span><span class="lucro">Lucro <b>${brl(recebido(p)-custo(p))}</b></span></div></div>
       <div class="box"><h3>Entregar para</h3><div class="end">${esc(endereco(c))}</div><div class="muted">${esc(c.email)}</div>
-        <div class="acts"><button class="btn" data-copiar>Copiar endereço</button>${wa?`<a class="btn" href="${wa}" target="_blank" rel="noopener">Mensagem no WhatsApp</a>`:""}</div></div>
+        <div class="acts"><button class="btn" data-copiar>Copiar endereço</button>${wa?`<a class="btn" href="${wa}">Escrever e-mail para a cliente</a>`:""}</div></div>
     </div>
     <div class="edit">
       <label>Status<select data-k="status">${opts}</select></label>
@@ -267,7 +267,7 @@ $("#lista").addEventListener("click",async e=>{
     const v=k=>art.querySelector(`[data-k="${k}"]`).value;
     let st=v("status");if(v("rastreio")&&["pago","comprado"].includes(st)&&!p.rastreio)st="enviado";
     try{const j=await api("POST",{acao:"atualizar",codigo:p.codigo,status:st,rastreio:v("rastreio"),pedidoFeira:v("pedidoFeira"),nota:v("nota")});
-      Object.assign(p,j.pedido);render();toast(st==="enviado"?"Salvo! Agora toque em Mensagem no WhatsApp para mandar o rastreio à cliente":"Salvo")}catch(err){toast(err.message)}
+      Object.assign(p,j.pedido);render();toast(st==="enviado"?"Salvo! O código de rastreio vai sozinho por e-mail para a cliente":"Salvo")}catch(err){toast(err.message)}
   }
 });
 /* esgotados */

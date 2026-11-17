@@ -11,7 +11,8 @@ window.CONFIG_LOJA = {
   urlConsulta: "/api/consultar-pedido",
   esgotados: [],                      // ids marcados como esgotados direto aqui (o painel faz isso sem editar código)
   metaPixel: "",                      // ID do Pixel da Meta (Facebook/Instagram), só números. Vazio = desligado
-  googleTag: "",                      // ID do Google Analytics (G-XXXX) ou Google Ads (AW-XXXX). Vazio = desligado
+  googleTag: "G-HW94MZL65C",                    // ID do Google Analytics (G-XXXX) ou Google Ads (AW-XXXX). Vazio = desligado
+  pinterestTag: "",                   // ID da Tag do Pinterest (só números). Vazio = desligado
   googleAdsConversao: "",             // conversão de compra do Google Ads, ex.: "AW-123456789/AbCdEfGhIj". Vazio = desligado
   adsLimiteSemVenda: 30,              // peça que gastar isso (R$, 30 dias) em anúncio sem vender sai dos anúncios
   adsCustoMaxVenda: 35,               // te avisa se cada venda pelo anúncio custar mais que isso (R$)
